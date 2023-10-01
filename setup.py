@@ -1,3 +1,15 @@
+"""
+setup.py for LeanIX Description Bot
+
+This script is used to package and distribute the LeanIX Description Bot as a Python package.
+It includes information such as the package name, version, dependencies, and entry points.
+
+For usage instructions, please refer to the README.md file.
+
+For more information about packaging Python projects, see the Python Packaging Authority:
+https://packaging.python.org/
+"""
+
 from setuptools import setup, find_packages
 
 setup(
