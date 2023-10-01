@@ -24,21 +24,36 @@ Before you begin, ensure you have met the following requirements:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/flask-security-webhook.git
-   cd flask-security-webhook
+   git clone git@github.com:bc-bjoern/leanix_description.git ld
+   cd ld
    ```
 
-2. Install requirements: 
-```
-pip install -r requirements.txt
-```
-3. Configure your API keys and application settings in the appropriate sections of leanix_description.py
+2. Create environment if needed:
+
+  ```
+  virtualenv venv
+  . venv/bin/activate
+  ```
+
+3. Install requirements: 
+
+  ```
+  pip install -r requirements.txt
+  ```
+4. Setup Webhook in LeanIX with Basic Auth
+5. Configure your API keys and application settings in the appropriate sections of .env
+  ```
+  cp .env.example .env
+  vi .env
+  ```
 
 ## Usage
 
 Start the Flask application:
 
-python app.py
+```
+python leanix_description/ld.py
+```
 
 Your webhook server should now be running on http://localhost:5000/webhook. Ensure you have configured your webhook provider (e.g., LeanIX) to send webhooks to this URL.
 
