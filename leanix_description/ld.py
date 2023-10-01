@@ -105,7 +105,6 @@ def webhook_handler():
                 factsheet_comment = openai.generate_description(factsheet_name, openai_challenge)
                 preface = "Hier ist ein Vorschlag für eine Beschreibung: "
                 comment = preface + factsheet_comment
-                print("Comment:" + comment)
                 leanix = l_graphql.LeanIX_GraphQL(AUTH_URL, API_TOKEN, REQUEST_URL)
                 leanix.add_comment(factsheet_id, comment)
             else:
