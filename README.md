@@ -4,6 +4,8 @@
 
 This is a Flask application designed to handle webhook from LeanIX. It includes rate limiting, user authentication, and security headers for enhanced security. This is just a showcase to improve the enterprise repository object's description with chatgpt.
 
+Do not use the setup like this in productive environment!
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
