@@ -2,9 +2,11 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-This is a Flask application designed to handle webhook from LeanIX. It includes rate limiting, user authentication, and security headers for enhanced security. This is just a showcase to improve the enterprise repository object's description with chatgpt.
+This is a Flask application designed to handle webhook from LeanIX. It includes rate limiting, user authentication, and security headers for enhanced security. 
 
-The Programm is listen to a LeanIX event named "FactSheetCreatedEvent".
+This is just a showcase to improve the enterprise repository object's description with chatgpt.
+
+The Programm listen to a LeanIX event named "FactSheetCreatedEvent" and post a comment on the new Factsheet with a suggestion to insert a proper description provided by ChatGPT.
 
 Do not use the setup like this in productive environment!
 
