@@ -17,6 +17,7 @@ venv/
 *.exe
 *.o
 *.so
+*.env
 
 # Dependency directories
 __pycache__/
