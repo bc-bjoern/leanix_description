@@ -7,6 +7,9 @@ __pycache__/
 *.log
 *.sqlite
 
+# Env
+.env
+
 # Virtual environment
 venv/
 
@@ -17,7 +20,6 @@ venv/
 *.exe
 *.o
 *.so
-*.env
 
 # Dependency directories
 __pycache__/
