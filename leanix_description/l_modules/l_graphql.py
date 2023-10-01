@@ -1,7 +1,18 @@
+"""
+This module facilitates communication with the LeanIX GraphQL API
+to add comments to Fact Sheets.
+
+Attributes:
+    requests.exceptions.RequestException: An exception class from the `requests` library.
+
+Classes:
+    LeanIxGraphQL: A class for communicating with the LeanIX GraphQL API and adding comments to Fact Sheets.
+"""
+
 import json
 import requests
 
-class LeanIX_GraphQL:
+class LeanIxGraphQL:
     """
     This class facilitates communication with the LeanIX GraphQL API
     to add comments to Fact Sheets.
@@ -9,7 +20,7 @@ class LeanIX_GraphQL:
 
     def __init__(self, AUTH_URL, API_TOKEN, REQUEST_URL):
         """
-        Initializes an instance of the LeanIX_GraphQL class.
+        Initializes an instance of the LeanIxGraphQL class.
 
         Args:
             AUTH_URL (str): The URL to the authentication endpoint.
@@ -22,14 +33,15 @@ class LeanIX_GraphQL:
         try:
             response = requests.post(
                 AUTH_URL,
+                timeout=30,
                 auth=('apitoken', API_TOKEN),
                 data={'grant_type': 'client_credentials'}
             )
             response.raise_for_status()
             self.access_token = response.json()['access_token']
             self.request_url = REQUEST_URL
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Failed to initialize LeanIX_GraphQL: {e}")
+        except requests.exceptions.RequestException as exception:
+            raise RuntimeError(f"Failed to initialize LeanIxGraphQL: {exception}")
 
     def add_comment(self, factsheet_id, factsheet_comment):
         """
@@ -68,7 +80,7 @@ class LeanIX_GraphQL:
             auth_header = 'Bearer ' + self.access_token
             header = {'Authorization': auth_header}
 
-            response = requests.post(url=self.request_url, headers=header, data=json_post)
+            response = requests.post(url=self.request_url, headers=header, data=json_post, timeout=30)
             response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Failed to send mutation to LeanIX: {e}")
+        except requests.exceptions.RequestException as exception:
+            raise RuntimeError(f"Failed to send mutation to LeanIX: {exception}")

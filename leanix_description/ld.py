@@ -1,8 +1,34 @@
 #!/usr/bin/env python3
-from flask import Flask, request, jsonify, abort
+"""
+This is a LeanIX Description Bot for automatically generating and adding descriptions
+to LeanIX Fact Sheets using OpenAI's GPT-3.5 model.
+
+The bot listens for FactSheetCreatedEvents via a webhook and generates a description for
+the newly created Fact Sheet, then adds it as a comment in LeanIX.
+
+Configuration is provided through environment variables.
+
+Required Environment Variables:
+- ACTIVE: Set to 1 to activate the bot.
+- OPENAI_API_KEY: Your OpenAI API key.
+- OPENAI_MODEL: The OpenAI model to use (default is 'gpt-3.5-turbo').
+- OPENAI_MAX_TOKENS: The maximum number of tokens for OpenAI responses (default is 200).
+- USERNAME: Your LeanIX Basic Auth username.
+- PASSWORD: Your LeanIX Basic Auth password.
+- API_TOKEN: Your LeanIX API token.
+- AUTH_URL: The URL for LeanIX authentication.
+- REQUEST_URL: The URL for GraphQL requests in LeanIX.
+- HOST: The host to run the Flask app (default is '0.0.0.0').
+- PORT: The port to run the Flask app (default is 5000).
+- DEBUG: Set to True for debugging (default is False).
+- ALLOWED_FACTSHEETS: Comma-separated list of Fact Sheet types to process (default is 'Application').
+- ALLOWED_USER_AGENTS: Comma-separated list of allowed User-Agent values.
+
+This bot uses the Flask framework and Flask-Limiter for rate limiting.
+"""
+
 from functools import wraps
-import base64
-import requests
+from flask import Flask, request, jsonify, abort
 from flask_limiter import Limiter
 from decouple import config, Csv
 from l_modules import l_graphql
@@ -49,6 +75,16 @@ limiter = Limiter(app)
 
 # Function to check Basic Auth Header
 def check_auth(username, password):
+    """
+    Checks if the provided username and password match the configured LeanIX Basic Auth credentials.
+
+    Args:
+        username (str): The username to be checked.
+        password (str): The password to be checked.
+
+    Returns:
+        bool: True if the provided credentials match, False otherwise.
+    """
     return username == USERNAME and password == PASSWORD
 
 # Function to handle authentication
@@ -60,13 +96,26 @@ def authenticate():
     return jsonify(message), 401, {'WWW-Authenticate': 'Basic realm="Login required"'}
 
 # Decorator-Function for authentication
-def requires_auth(f):
-    @wraps(f)
+def requires_auth(func):
+    """
+    Decorator function for enforcing basic authentication on Flask routes.
+
+    This decorator checks if the request has valid Basic Authentication credentials
+    by comparing them with the configured LeanIX Basic Auth credentials.
+
+    Args:
+        func (function): The function to be decorated.
+
+    Returns:
+        function: The decorated function if authentication is successful,
+        or a 401 Unauthorized response if authentication fails.
+    """
+    @wraps(func)
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return decorated
 
 # Apply rate limiting to the webhook_handler function
@@ -74,6 +123,19 @@ def requires_auth(f):
 @app.route('/webhook', methods=['POST'])
 @requires_auth
 def webhook_handler():
+    """
+    Handle incoming webhook requests from LeanIX.
+
+    This function processes incoming POST requests to the '/webhook' route.
+    It performs the following checks:
+    - Validates the User-Agent header against allowed user agents.
+    - Ensures the request is from LeanIX by checking the X-Webhooks-Event header.
+    - Parses and processes FactSheetCreatedEvent webhooks for allowed fact sheet types.
+    - Utilizes OpenAI's ChatGPT to generate comments for fact sheets and adds them via LeanIX GraphQL.
+
+    Returns:
+        Response: A JSON response indicating the success or failure of the webhook handling.
+    """
     user_agent = request.headers.get('User-Agent')
     # Check user agent
     if user_agent not in allowed_user_agents:
@@ -92,8 +154,6 @@ def webhook_handler():
 
     try:
         data = request.json
-        workspace_id = data.get('workspaceId')
-        user_id = data.get('userId')
         event_type = data.get('type')
         factsheet_id = data['factSheet']['id']
         factsheet_name = data['factSheet']['name']
@@ -101,11 +161,11 @@ def webhook_handler():
 
         if event_type == 'FactSheetCreatedEvent' and factsheet_type in allowed_factsheets:
             if factsheet_id and ACTIVE == 1:
-                openai = l_openai.OpenAI_ChatGPT(openai_model, openai_max_tokens, openai_api_key)
+                openai = l_openai.OpenAiChatGPT(openai_model, openai_max_tokens, openai_api_key)
                 factsheet_comment = openai.generate_description(factsheet_name, openai_challenge)
                 preface = "Hier ist ein Vorschlag für eine Beschreibung: "
                 comment = preface + factsheet_comment
-                leanix = l_graphql.LeanIX_GraphQL(AUTH_URL, API_TOKEN, REQUEST_URL)
+                leanix = l_graphql.LeanIxGraphQL(AUTH_URL, API_TOKEN, REQUEST_URL)
                 leanix.add_comment(factsheet_id, comment)
             else:
                 print("Turned off")
@@ -113,8 +173,8 @@ def webhook_handler():
             return jsonify({'message': 'Webhook successful'}), 200
 
         return "Webhook wrong."
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+    except Exception as exception:
+        print(f"An error occurred: {str(exception)}")
         abort(500)
 
 if __name__ == "__main__":
