@@ -1,6 +1,6 @@
 Flask==2.3.3
 openai==0.28.1
-pandas==2.1.1
+pandas
 requests==2.31.0
 python-decouple==3.8
 flask-limiter==3.5.0
