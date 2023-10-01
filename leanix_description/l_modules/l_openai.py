@@ -49,6 +49,9 @@ class OpenAI_ChatGPT:
             if last_period_index != -1:
                 cropped_text = text[:last_period_index + 1]
 
+            # For some reasons GraphQL API don't accept the text from openai without manipulation
+            # The "\n"-Signs especially seems to be a issue. Since there are no returns, it's hard to debug it. 
+            # If someone know to do it pretty - feel free to fix it.
             decoded_string = html.unescape(cropped_text)  # Decode HTML entities
             decoded_string = decoded_string.replace("\n", " ") # Don't ask me...
             return decoded_string
