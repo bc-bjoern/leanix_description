@@ -50,7 +50,7 @@ class OpenAI_ChatGPT:
                 cropped_text = text[:last_period_index + 1]
 
             decoded_string = html.unescape(cropped_text)  # Decode HTML entities
-
+            decoded_string = decoded_string.replace("\n", " ") # Don't ask me...
             return decoded_string
         except Exception as e:
             raise RuntimeError(f"Failed to generate description using OpenAI: {e}")
