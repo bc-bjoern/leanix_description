@@ -18,28 +18,28 @@ class LeanIxGraphQL:
     to add comments to Fact Sheets.
     """
 
-    def __init__(self, AUTH_URL, API_TOKEN, REQUEST_URL):
+    def __init__(self, auth_url, api_token, request_url):
         """
         Initializes an instance of the LeanIxGraphQL class.
 
         Args:
-            AUTH_URL (str): The URL to the authentication endpoint.
-            API_TOKEN (str): The API token for authentication.
-            REQUEST_URL (str): The URL for GraphQL requests.
+            auth_url (str): The URL to the authentication endpoint.
+            api_token (str): The API token for authentication.
+            request_url (str): The URL for GraphQL requests.
 
         Raises:
             requests.exceptions.RequestException: If the request fails.
         """
         try:
             response = requests.post(
-                AUTH_URL,
+                auth_url,
                 timeout=30,
-                auth=('apitoken', API_TOKEN),
+                auth=('apitoken', api_token),
                 data={'grant_type': 'client_credentials'}
             )
             response.raise_for_status()
             self.access_token = response.json()['access_token']
-            self.request_url = REQUEST_URL
+            self.request_url = request_url
         except requests.exceptions.RequestException as exception:
             raise RuntimeError(f"Failed to initialize LeanIxGraphQL: {exception}")
 

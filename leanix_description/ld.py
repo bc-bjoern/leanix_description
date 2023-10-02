@@ -50,11 +50,11 @@ openai_max_tokens = config('OPENAI_MAX_TOKENS', default=200, cast=int)
 USERNAME = config('USERNAME', default='')
 PASSWORD = config('PASSWORD', default='')
 # Leanix API User Key
-API_TOKEN = config('API_TOKEN', default='')
+api_token = config('API_TOKEN', default='')
 # LeanIX Auth URL
-AUTH_URL = config('AUTH_URL', default='')
+auth_url = config('AUTH_URL', default='')
 # LeanIX Request URL
-REQUEST_URL = config('REQUEST_URL', default='')
+request_url = config('REQUEST_URL', default='')
 
 # Flask Interface
 host = config('HOST', default='0.0.0.0')
@@ -165,7 +165,7 @@ def webhook_handler():
                 factsheet_comment = openai.generate_description(factsheet_name, openai_challenge)
                 preface = "Hier ist ein Vorschlag für eine Beschreibung: "
                 comment = preface + factsheet_comment
-                leanix = l_graphql.LeanIxGraphQL(AUTH_URL, API_TOKEN, REQUEST_URL)
+                leanix = l_graphql.LeanIxGraphQL(auth_url, api_token, request_url)
                 leanix.add_comment(factsheet_id, comment)
             else:
                 print("Turned off")
