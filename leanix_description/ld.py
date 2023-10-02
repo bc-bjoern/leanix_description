@@ -28,7 +28,7 @@ This bot uses the Flask framework and Flask-Limiter for rate limiting.
 """
 
 from functools import wraps
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from decouple import config, Csv
 from l_modules import l_graphql
@@ -202,8 +202,6 @@ def webhook_handler():
         return handle_error(file_error, 404)
     except PermissionError as permission_error:
         return handle_error(permission_error, 403)
-    except requests.exceptions.RequestException as request_error:
-        return handle_error(request_error, 500)
 
     return None
 
