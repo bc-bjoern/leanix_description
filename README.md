@@ -36,22 +36,22 @@ Before you begin, ensure you have met the following requirements:
 
 2. Create environment if needed:
 
-  ```
-  virtualenv venv
-  . venv/bin/activate
-  ```
+   ```
+   virtualenv venv
+   . venv/bin/activate
+   ```
 
 3. Install requirements:
 
-  ```
-  pip install -r requirements.txt
-  ```
+   ```
+   pip install -r requirements.txt
+   ```
 4. Setup Webhook in LeanIX with Basic Auth
 5. Configure your API keys and application settings in the appropriate sections of .env
-  ```
-  cp .env.example .env
-  vi .env
-  ```
+   ```
+   cp .env.example .env
+   vi .env
+   ```
 
 ## Usage
 
