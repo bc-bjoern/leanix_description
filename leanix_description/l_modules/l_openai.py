@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """
 This module facilitates communication with the OpenAI GPT model
 to generate descriptions for applications.
@@ -11,7 +12,6 @@ Classes:
 
 import html
 import openai
-import requests
 
 class OpenAiChatGPT:
     """
