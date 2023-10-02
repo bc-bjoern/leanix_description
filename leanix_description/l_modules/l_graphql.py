@@ -41,7 +41,7 @@ class LeanIxGraphQL:
             self.access_token = response.json()['access_token']
             self.request_url = request_url
         except requests.exceptions.RequestException as exception:
-            raise RuntimeError(f"Failed to initialize LeanIxGraphQL: {exception}")
+            raise RuntimeError(f"Failed to initialize LeanIxGraphQL: {exception}") from exception
 
     def add_comment(self, factsheet_id, factsheet_comment):
         """
@@ -83,4 +83,4 @@ class LeanIxGraphQL:
             response = requests.post(url=self.request_url, headers=header, data=json_post, timeout=30)
             response.raise_for_status()
         except requests.exceptions.RequestException as exception:
-            raise RuntimeError(f"Failed to send mutation to LeanIX: {exception}")
+            raise RuntimeError(f"Failed to send mutation to LeanIX: {exception}") from exception

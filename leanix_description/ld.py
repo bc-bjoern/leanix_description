@@ -73,6 +73,35 @@ app = Flask(__name__)
 # Initialize Limiter for rate limiting
 limiter = Limiter(app)
 
+# helper function to handle errors
+def handle_error(error, status_code):
+    """
+    Handles errors by printing the error message and generating an appropriate JSON response.
+
+    Args:
+        error (Exception): The exception or error that occurred.
+        status_code (int): The HTTP status code to include in the response.
+
+    Returns:
+        Response: A JSON response with an error message and the specified status code.
+    """
+    print(f"An error occurred: {str(error)}")
+    return abort_with_message("An error occurred.", status_code)
+
+# helper to print errors
+def abort_with_message(message, status_code=400):
+    """
+    Generates a JSON response with a custom error message and status code for aborting a request.
+
+    Args:
+        message (str): The error message to include in the response.
+        status_code (int, optional): The HTTP status code to use (default is 400).
+
+    Returns:
+        Response: A JSON response with the provided message and status code.
+    """
+    return jsonify({'message': message}), status_code
+
 # Function to check Basic Auth Header
 def check_auth(username, password):
     """
@@ -139,18 +168,15 @@ def webhook_handler():
     user_agent = request.headers.get('User-Agent')
     # Check user agent
     if user_agent not in allowed_user_agents:
-        print(user_agent + " is forbidden.")
-        abort(403)
+        abort_with_message("User-Agent is forbidden.", 403)
 
     # Check if request is from LeanIX
     if 'X-Webhooks-Event' not in request.headers:
-        print("No official request")
-        abort(403)
+        abort_with_message("No official request.", 403)
 
     webhook_event = request.headers.get('X-Webhooks-Event')
     if 'leanix.net' not in webhook_event:
-        print("No official request")
-        abort(403)
+        abort_with_message("No official request.", 403)
 
     try:
         data = request.json
@@ -163,8 +189,7 @@ def webhook_handler():
             if factsheet_id and ACTIVE == 1:
                 openai = l_openai.OpenAiChatGPT(openai_model, openai_max_tokens, openai_api_key)
                 factsheet_comment = openai.generate_description(factsheet_name, openai_challenge)
-                preface = "Hier ist ein Vorschlag für eine Beschreibung: "
-                comment = preface + factsheet_comment
+                comment = 'Hier ist ein Vorschlag für eine Beschreibung: ' + factsheet_comment
                 leanix = l_graphql.LeanIxGraphQL(auth_url, api_token, request_url)
                 leanix.add_comment(factsheet_id, comment)
             else:
@@ -172,10 +197,15 @@ def webhook_handler():
 
             return jsonify({'message': 'Webhook successful'}), 200
 
-        return "Webhook wrong."
-    except Exception as exception:
-        print(f"An error occurred: {str(exception)}")
-        abort(500)
+        abort_with_message("Webhook wrong.")
+    except FileNotFoundError as file_error:
+        return handle_error(file_error, 404)
+    except PermissionError as permission_error:
+        return handle_error(permission_error, 403)
+    except requests.exceptions.RequestException as request_error:
+        return handle_error(request_error, 500)
+
+    return None
 
 if __name__ == "__main__":
     app.run(host=host, port=port, debug=debug)

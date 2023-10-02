@@ -67,4 +67,4 @@ class OpenAiChatGPT:
             decoded_string = decoded_string.replace("\n", " ") # Don't ask me...
             return decoded_string
         except Exception as exception:
-            raise RuntimeError(f"Failed to generate description using OpenAI: {exception}")
+            raise RuntimeError(f"Failed to generate description using OpenAI: {exception}") from exception
