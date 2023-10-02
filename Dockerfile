@@ -1,21 +1,26 @@
-# Verwenden des offiziellen Python-Basisimages von Docker Hub
+# Use a slim Python base image
 FROM python:3.8-slim
 
-# Setzen der Arbeitsverzeichnis innerhalb des Containers
+# Install curl
+RUN apt-get update && apt-get install -y curl
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Kopieren der Python-Abhängigkeiten und der .env-Datei in das Arbeitsverzeichnis
-COPY requirements.txt ./
-COPY .env ./
+# Copy the directory structure into the container's working directory
+COPY . .
 
-# Installieren der Python-Abhängigkeiten
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy env
+COPY .env .env
 
-# Kopieren des Python-Programms in das Arbeitsverzeichnis
-COPY leanix_description.py .
+# Install dependencies
+RUN pip install -r requirements.txt
 
-# Exponieren des Ports, den Ihr Flask-Server verwendet (standardmäßig 5000)
+# Set the environment variable for Flask
+ENV FLASK_APP=leanix_description/ld.py
+
+# Expose the port on which Flask will run (default is 5000)
 EXPOSE 5000
 
-# Definieren des Befehls, um Ihre Flask-Anwendung auszuführen
-CMD ["python", "leanix_description.py"]
+# Start the Flask application
+CMD ["flask", "run", "--host=0.0.0.0"]

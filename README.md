@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-This is a Flask application designed to handle webhook from LeanIX. It includes rate limiting, user authentication, and security headers for enhanced security. 
+This is a Flask application designed to handle webhook from LeanIX. It includes rate limiting, user authentication, and security headers for enhanced security.
 
 This is just a showcase to improve the enterprise repository object's description with chatgpt.
 
@@ -41,7 +41,7 @@ Before you begin, ensure you have met the following requirements:
   . venv/bin/activate
   ```
 
-3. Install requirements: 
+3. Install requirements:
 
   ```
   pip install -r requirements.txt
@@ -62,6 +62,17 @@ python leanix_description/ld.py
 ```
 
 Your webhook server should now be running on http://localhost:5000/webhook. Ensure you have configured your webhook provider (e.g., LeanIX) to send webhooks to this URL.
+
+## Docker
+
+```
+git clone git@github.com:bc-bjoern/leanix_description.git ld
+cd ld
+cp .env.example .env
+vi .env
+docker build -t ld  .
+docker run -p 5000:5000 ld:latest
+```
 
 ## Security
 
