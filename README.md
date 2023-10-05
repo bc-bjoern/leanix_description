@@ -7,8 +7,12 @@ This is a Flask application designed to handle webhook from LeanIX. It includes 
 This is just a showcase to improve the enterprise repository object's description with chatgpt.
 
 The Programm listen to a LeanIX event named "FactSheetCreatedEvent" and post a comment on the new Factsheet with a suggestion to insert a proper description provided by ChatGPT.
+You can also change the description directly. 
 
-Do not use the setup like this in productive environment!
+Please use SSL in productive environments for sure. 
+
+See also the [LeanIX AI Assistent](https://docs-eam.leanix.net/docs/leanix-ai-assistant)
+
 
 ## Table of Contents
 

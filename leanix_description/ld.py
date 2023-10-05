@@ -10,6 +10,7 @@ Configuration is provided through environment variables.
 
 Required Environment Variables:
 - ACTIVE: Set to 1 to activate the bot.
+- ACTION: Set to "comment" or "description" to add a comment or change the description directly
 - OPENAI_API_KEY: Your OpenAI API key.
 - OPENAI_MODEL: The OpenAI model to use (default is 'gpt-3.5-turbo').
 - OPENAI_MAX_TOKENS: The maximum number of tokens for OpenAI responses (default is 200).
@@ -36,6 +37,8 @@ from l_modules import l_openai
 
 # Turn it on or off
 ACTIVE = config('ACTIVE', default=1, cast=int)
+# How the bot should behave
+ACTION = config('ACTION', default='comment')
 
 # OpenAI challenge
 openai_challenge = config('OPENAI_CHALLENGE', default='Erstelle eine Beschreibung für die Applikation namens')
@@ -189,9 +192,14 @@ def webhook_handler():
             if factsheet_id and ACTIVE == 1:
                 openai = l_openai.OpenAiChatGPT(openai_model, openai_max_tokens, openai_api_key)
                 factsheet_comment = openai.generate_description(factsheet_name, openai_challenge)
-                comment = 'Hier ist ein Vorschlag für eine Beschreibung: ' + factsheet_comment
                 leanix = l_graphql.LeanIxGraphQL(auth_url, api_token, request_url)
-                leanix.add_comment(factsheet_id, comment)
+                if ACTION == 'comment':
+                    leanix.add_comment(factsheet_id, factsheet_comment)
+                elif ACTION == 'description':
+                    leanix.add_description(factsheet_id, factsheet_comment)
+                else:
+                    abort_with_message("ACTION unclear.", 500)
+
             else:
                 print("Turned off")
 

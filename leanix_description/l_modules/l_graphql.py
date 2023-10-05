@@ -54,7 +54,7 @@ class LeanIxGraphQL:
         Raises:
             requests.exceptions.RequestException: If the request fails.
         """
-        mutation_string = """
+        query = """
             mutation {
               createComment(factSheetId: "%s", message: "%s", status: ACTIVE) {
                 id
@@ -62,7 +62,36 @@ class LeanIxGraphQL:
             }
           """ % (factsheet_id, factsheet_comment)
 
-        self.send_mutation(mutation_string)
+        self.send_mutation(query)
+
+    def add_description(self, factsheet_id, factsheet_description):
+        """
+        Aktualisiert die Beschreibung eines Factsheets mithilfe einer GraphQL-Mutationsanfrage.
+
+        Args:
+            factsheet_id (str): Die ID des Factsheets, dessen Beschreibung aktualisiert werden soll.
+            factsheet_description (str): Die neue Beschreibung, die dem Factsheet zugewiesen werden soll.
+
+        Returns:
+            None
+
+        Beispiel:
+            add_description('614f1e34-a757-4b37-a074-597d0cd0e6df', 'Eine neue Beschreibung für das Factsheet.')
+        """
+        query = """
+            mutation {
+                result: updateFactSheet(id: "%s", patches: {op:replace, path: \"/description\", value: "%s"}) {
+                    factSheet {
+                        ... on Application {
+                            displayName
+                            description
+                        }
+                    }
+                }
+            }
+            """ % (factsheet_id, factsheet_description)
+
+        self.send_mutation(query)
 
     def send_mutation(self, mutation_string):
         """
